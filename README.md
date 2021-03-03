@@ -10,6 +10,20 @@
 - Deep generative model은 최대 가능도 추정과 관련된 전략들에서 발생하는 많은 확률 연산들을 근사할 때의 어려움과 generative context에서는 기존 deep learning model의 큰 성공을 이끌었던 선형 piecewise linear units의 이점들을 가져오는 것의 어려움이 있어 큰 임팩트가 없었다. 이러한 어려움을 해결하기 위해 이 논문에서는 새로운 모델 추정 과정을 제안하였다.
 - 이 논문에서 소개하는 adversarial nets framework에서 생성 모델은 sample이 생성 모델이 생성한 분포인지 진짜 데이터의 분포인지를 판별하는 discriminative model과 이에 맞서 싸우는 생성 모델로 이루어져있다.
 
+# BackGround
+
+- KL Divergence
+
+    두 확률 분포의 다름의 정도를 설명한다.
+
+    ![image/KLD.png](image/KLD.png)
+
+    머신러닝에서 아직 확인되지 않은 모델을 특정 확률 분포로 근사 시킬 때 KL Divergence를 사용한다. 실제 데이터를 가장 잘 표현하는 정규분포를 구하려면 KL Divergence를 가장 낮게 만드는 정규 분포를 구하면된다.
+
+- Jensen-Shannon Divergence(JSD)
+
+    ![image/JSD.png](image/JSD.png)
+
 # Adversarial nets
 
 - Discriminator D는 실제 데이터가 들어왔을 경우 1(진짜), Generator로부터 생성된 데이터가 들어왔을 경우 0(가짜)라고 판별 해야한다. 즉 D는 진짜 데이터 x가 들어올 때만 1이 되도록 학습이 진행된다.(logD(x), log(1-D(G(z))를 maximize한다.) 이에 맞서 Generator G는 D가 1(진짜)로 판단하도록(D(G(z))가 1이 되도록) 학습이 진행된다(log(1 -D(G(z)))를 minimize 한다.).
