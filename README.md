@@ -48,3 +48,89 @@
     (c). D를 고정하고 D의 gradient를 이용해 G를 학습시킨다.
 
     (d). (b),(c)를 반복해 generator는 discriminator가 구분할 수 없을정도의 데이터를 생성하고, discriminator는 둘을 구분할 수 없어 D(x) = 0.5가 된다
+
+# Theoretical Results
+
+### Algorithm 1
+
+Minibatch stochastic gradient descent training of generative adversarial nets. The number of
+steps to apply to the discriminator, k, is a hyperparameter. We used k = 1, the least expensive option, in our experiments.
+
+![image/Algorithm.png](image/Algorithm.png)
+
+논문에서는 위와 같이 Discriminator를 먼저 학습 시키고 Generator를 학습시키는 것을 반복하는 알고리즘을 제시하였다. 
+
+GAN의 minimax problem이 잘 동작한다고 말하기 다음 두가지를 증명해야한다.
+
+1.  minimax problem이 데이터의 distribution과 generator 결과의 distribution이 같을 때 global optimum을 가진다.
+2. Algorithm1 이 global optimum을 찾아준다.
+
+### Global Optimality of pg = pdata
+
+- **proposition1**
+
+    G가 고정된 경우 최적의 D는 아래의 식과 같다.
+
+![image/Dstar.png](image/Dstar.png)
+
+- **증명1**
+
+    G를 고정하였으므로 V(G,D)를 단순히 maximize만 해주면 된다.
+
+    ![image/V.png](image/V.png)
+
+    기대값을 풀어서 쓰면 위와 같이 V(G,D)를 나타낼 수 있다. 확률값을 상수로 보고 V가 최대일 때 D를 구해야하므로 미분하면 D(x)가 proposition1과 같은 식이 나오는것을 알 수 있다.
+
+**proposition1**을 사용해 ****V(G,D)를 다시 작성해보면 아래와 같다.
+
+![image/CG.png](image/CG.png)
+
+- **Theorem1**
+
+    The global minimum of the virtual training criterion C(G) is achieved if and only if pg = pdata. At that point, C(G) achieves the value − log 4.
+
+- **증명**
+
+    두 p가 같다면 **proposition1**로 D(x)가 1/2이 된다. 따라서 C(G) = -log4가 된다. 
+
+    ![image/log4.png](image/log4.png)
+
+    이를 증명하기 위해 C(G)의 식을 아래와 같이 변경해볼 수 있다.
+
+    ![image/CG2.png](image/CG2.png)
+
+    JSD는 두 distribution이 일치할 경우에만 0이고 나머지 경우에는 양수이므로 C(G)는 두 P가 같을 때 -log4라는 global minimum을 갖는것을 알 수 있다.
+
+    ### Convergence of Algorithm
+
+    - **Proposition2**
+
+        Algorithm1의 각 step에서 discriminator가 주어진 G에 대해 optimum에 도달하도록 허용하고, $p_g$가 업데이트되어 기준을 개선한다면 $p_g$는 $p_{data}$로 수렴한다.
+
+        ![image/D.png](image/D.png)
+
+    - **증명**
+
+        ![image/proof.png](image/proof.png)
+
+    # Experiments
+
+    - 논문에서는 adversarial nets를 MNIST, TFD, CIFAR-10을 사용해 학습하였다.
+    - Generator는 ReLU와 sigmoid activation을 혼합하여 사용하였고, Discriminator는 maxout activation을 사용하였다.
+    - Discriminator를 학습할 때에는 dropout을 적용하였다.
+    - 이론적인 프레임워크에서는 Generator의 중간층에 dropout과 noise를 허용하지 않지만, 실험에서 generator net 마지막 Layer에 input으로 noise를 사용하였다.
+    - Generator로 생성된 sample에 Gaussian Parzen window를 피팅하고 해당 분포에 따른 log likelihood를 알려줌으로써 Pg에 따른 test set data를 추정하였다.
+
+    # Advantages and disadvantage
+
+    ### Advantage
+
+    - Markov chains이 전혀 필요 없고 gradients를 얻기 위해 back-propagation만이 사용된다.
+    - 학습 중 inference가 필요 없다.
+    - Markov chains를 쓸때보다 선명한 이미지를 얻을 수 있다.
+
+    ### disadvantage
+
+    - D와 G가 균형을 잘 맞춰 성능이 향상되어야 한다.
+        - G가 D가 발전하기 전에 더 만이 발전되어서는 안된다. (G가 z데이터를 너무 많이 붕괴시켜버리기 때문)
+    - Pg(x)가 명시적으로 존재하지 않는다.
