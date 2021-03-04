@@ -113,24 +113,48 @@ GAN의 minimax problem이 잘 동작한다고 말하기 다음 두가지를 증�
 
         ![image/proof.png](image/proof.png)
 
-    # Experiments
+# Experiments
 
-    - 논문에서는 adversarial nets를 MNIST, TFD, CIFAR-10을 사용해 학습하였다.
-    - Generator는 ReLU와 sigmoid activation을 혼합하여 사용하였고, Discriminator는 maxout activation을 사용하였다.
-    - Discriminator를 학습할 때에는 dropout을 적용하였다.
-    - 이론적인 프레임워크에서는 Generator의 중간층에 dropout과 noise를 허용하지 않지만, 실험에서 generator net 마지막 Layer에 input으로 noise를 사용하였다.
-    - Generator로 생성된 sample에 Gaussian Parzen window를 피팅하고 해당 분포에 따른 log likelihood를 알려줌으로써 Pg에 따른 test set data를 추정하였다.
+- 논문에서는 adversarial nets를 MNIST, TFD, CIFAR-10을 사용해 학습하였다.
+- Generator는 ReLU와 sigmoid activation을 혼합하여 사용하였고, Discriminator는 maxout activation을 사용하였다.
+- Discriminator를 학습할 때에는 dropout을 적용하였다.
+- 이론적인 프레임워크에서는 Generator의 중간층에 dropout과 noise를 허용하지 않지만, 실험에서 generator net 마지막 Layer에 input으로 noise를 사용하였다.
+- Generator로 생성된 sample에 Gaussian Parzen window를 피팅하고 해당 분포에 따른 log likelihood를 알려줌으로써 Pg에 따른 test set data를 추정하였다.
 
-    # Advantages and disadvantage
+# Advantages and disadvantage
 
-    ### Advantage
+### Advantage
 
-    - Markov chains이 전혀 필요 없고 gradients를 얻기 위해 back-propagation만이 사용된다.
-    - 학습 중 inference가 필요 없다.
-    - Markov chains를 쓸때보다 선명한 이미지를 얻을 수 있다.
+- Markov chains이 전혀 필요 없고 gradients를 얻기 위해 back-propagation만이 사용된다.
+- 학습 중 inference가 필요 없다.
+- Markov chains를 쓸때보다 선명한 이미지를 얻을 수 있다.
 
-    ### disadvantage
+### disadvantage
 
-    - D와 G가 균형을 잘 맞춰 성능이 향상되어야 한다.
-        - G가 D가 발전하기 전에 더 만이 발전되어서는 안된다. (G가 z데이터를 너무 많이 붕괴시켜버리기 때문)
-    - Pg(x)가 명시적으로 존재하지 않는다.
+- D와 G가 균형을 잘 맞춰 성능이 향상되어야 한다.
+    - G가 D가 발전하기 전에 더 만이 발전되어서는 안된다. (G가 z데이터를 너무 많이 붕괴시켜버리기 때문)
+- Pg(x)가 명시적으로 존재하지 않는다.
+
+# 구현
+
+### Generator
+
+- Input : 128 크기의 noise
+- Hidden : Linear를 사용했으며 각 Layer의 output은 256, 512, 1024 
+- Output : 학습하려는 원본 이미지와 같은 shape
+
+### Discriminator
+
+- Input : 원본 이미지의 channel * width * height
+- Hidden : Linear를 사용했으며 각 Layer의 output은 1024, 512, 256, 128
+- Output : 1
+
+### train
+
+- loss_function : nn.BCELoss
+- learning_rate : 1e-4
+- optimizier : Generator, Discriminator 둘다 Adam
+
+
+### MNIST로 학습한 Generator
+![image/MINST_gan.gif](image/MINST_gan.gif)
