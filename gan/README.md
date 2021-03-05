@@ -155,6 +155,11 @@ GAN의 minimax problem이 잘 동작한다고 말하기 다음 두가지를 증�
 - learning_rate : 1e-4
 - optimizier : Generator, Discriminator 둘다 Adam
 
+### 실행
+
+- '''python3 gan.py'''
+- 만약 샘플이미지가 변화는 과정을 보기 위해서는 image\_show함수 전달인자로 True추가로 작성
+
 
 ### MNIST로 학습한 Generator
 ![image/MINST_gan.gif](image/MINST_gan.gif)
